@@ -1,28 +1,46 @@
 ---
 - hosts: all
   gather_facts: yes
+  vars:
+    auth_url: https://keystone.tcsecp.com:5000/v3
+    username: 1404562
+    password: Admin#123
+    user_domain_name: admin_domain
+    project_domain_name: admin_domain
+    project_name: development
+    cacert_path: /root/cacert.pem
+    server_name: "{{ name }}"
+    availability_zone: zone1
+    image_name: ubuntu20.04-dev-root
+    boot_from_volume: true
+    volume_size: 50
+    terminate_volume: true
+    network_name: develop
+    flavor_name: g1t1.large
+    security_group_id: b67bc9b7-f987-4a64-b625-4cc64dc77c5d
+
   tasks:
-    - name: server is getting launched
+    - name: Launch OpenStack server
       os_server:
         state: present
         auth:
-          auth_url: https://keystone.tcsecp.com:5000/v3
-          username: 1404562
-          password: Admin#123
-          os_user_domain_name: admin_domain
-          os_project_domain_name: admin_domain
-          project_name: development
-        cacert: /root/cacert.pem
-        name: "{{name}}"
-        availability_zone: zone1
-        image: ubuntu20.04-dev-root
-        boot_from_volume: True
-        volume_size: 50
-        terminate_volume: true
-        network: develop
-        flavor: g1t1.large
-        security_groups: 	b67bc9b7-f987-4a64-b625-4cc64dc77c5d
+          auth_url: "{{ auth_url }}"
+          username: "{{ username }}"
+          password: "{{ password }}"
+          os_user_domain_name: "{{ user_domain_name }}"
+          os_project_domain_name: "{{ project_domain_name }}"
+          project_name: "{{ project_name }}"
+        cacert: "{{ cacert_path }}"
+        name: "{{ server_name }}"
+        availability_zone: "{{ availability_zone }}"
+        image: "{{ image_name }}"
+        boot_from_volume: "{{ boot_from_volume }}"
+        volume_size: "{{ volume_size }}"
+        terminate_volume: "{{ terminate_volume }}"
+        network: "{{ network_name }}"
+        flavor: "{{ flavor_name }}"
+        security_groups: "{{ security_group_id }}"
         auto_ip: yes
 
     - debug:
-        msg: "server launched"
+        msg: "Server {{ server_name }} has been launched successfully."
