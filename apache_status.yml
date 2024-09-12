@@ -1,0 +1,47 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    var1: []
+    var2: []
+    var3: []
+    var: "{{apache_version}}"
+    distribution: "{{distribution}}"
+    a_stop: "Active: inactive (dead)"
+    a_running: "Active: active (running)"
+    error_var: "Unit apache2.service could not be found"
+    var: "{{apache_version}}"
+    distribution: "{{distribution}}"
+  tasks:
+    - command: sudo systemctl status apache2
+      register: output
+      ignore_errors: true
+    - set_fact:
+        var3:  "{{var3}}+['{{ansible_hostname}}: {{ansible_default_ipv4.address}}']"
+      when: 'error_var in output.stderr'
+      ignore_errors: true
+
+    - block:
+        - set_fact:
+            var1: "{{var1}}+['{{ansible_hostname}}: {{ansible_default_ipv4.address}}']"
+          when: "a_running in output.stdout_lines[4]"
+        - set_fact:
+            var2: "{{var2}}+['{{ansible_hostname}}: {{ansible_default_ipv4.address}}']"
+          when: "a_stop in output.stdout_lines[4]"
+      when: ansible_distribution == distribution  
+      ignore_errors: true
+
+- hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+    - debug:
+        msg: "Apache2 is in active state - servers: {{var1}}"
+      when: var1 is defined
+    - debug:
+        msg: "Apache2 is in inactive state - servers: {{var2}}"
+      when: var2 is defined
+    - debug:
+        msg: " Apache not Installed - servers: {{var3}}"
+      when: var3 is defined
