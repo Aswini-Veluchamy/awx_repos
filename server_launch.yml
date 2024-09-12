@@ -1,0 +1,28 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+    - name: server is getting launched
+      os_server:
+        state: present
+        auth:
+          auth_url: https://keystone.tcsecp.com:5000/v3
+          username: 1404562
+          password: Admin#123
+          os_user_domain_name: admin_domain
+          os_project_domain_name: admin_domain
+          project_name: development
+        cacert: /root/cacert.pem
+        name: "{{name}}"
+        availability_zone: zone1
+        image: ubuntu20.04-dev-root
+        boot_from_volume: True
+        volume_size: 50
+        terminate_volume: true
+        network: develop
+        flavor: g1t1.large
+        security_groups: 	b67bc9b7-f987-4a64-b625-4cc64dc77c5d
+        auto_ip: yes
+
+    - debug:
+        msg: "server launched"
