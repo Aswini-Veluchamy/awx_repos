@@ -1,6 +1,6 @@
 ---
 - name: Update package index
-  hosts: 172.10.10.164
+  hosts: "172.10.10.164"
   become: yes
   tasks:
     - name: Update APT package index
